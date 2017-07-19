@@ -5,7 +5,7 @@
  * Copyright (C) 1991-1998, Thomas G. Lane.
  * Modified 2003-2011 by Guido Vollbeding.
  * libjpeg-turbo Modifications:
- * Copyright (C) 2010, 2013-2014, 2017, D. R. Commander.
+ * Copyright (C) 2010, 2013-2014, D. R. Commander.
  * mozjpeg Modifications:
  * Copyright (C) 2014, Mozilla Corporation.
  * For conditions of distribution and use, see the accompanying README file.
@@ -81,7 +81,6 @@ static const char * const cdjpeg_message_table[] = {
 
 static boolean is_targa;        /* records user -targa switch */
 static boolean is_jpeg;
-static boolean copy_markers;
 
 LOCAL(cjpeg_source_ptr)
 select_file_type (j_compress_ptr cinfo, FILE *infile)
@@ -116,7 +115,6 @@ select_file_type (j_compress_ptr cinfo, FILE *infile)
 #endif
 #ifdef PNG_SUPPORTED
   case 0x89:
-    copy_markers = TRUE;
     return jinit_read_png(cinfo);
 #endif
 #ifdef RLE_SUPPORTED
@@ -129,7 +127,6 @@ select_file_type (j_compress_ptr cinfo, FILE *infile)
 #endif
   case 0xff:
     is_jpeg = TRUE;
-    copy_markers = TRUE;
     return jinit_read_jpeg(cinfo);
   default:
     ERREXIT(cinfo, JERR_UNKNOWN_FORMAT);
@@ -231,11 +228,11 @@ usage (void)
   fprintf(stderr, "  -verbose  or  -debug   Emit debug output\n");
   fprintf(stderr, "  -version       Print version information and exit\n");
   fprintf(stderr, "Switches for wizards:\n");
-  fprintf(stderr, "  -qtables FILE  Use quantization tables given in FILE\n");
+  fprintf(stderr, "  -qtables file  Use quantization tables given in file\n");
   fprintf(stderr, "  -qslots N[,...]    Set component quantization tables\n");
   fprintf(stderr, "  -sample HxV[,...]  Set component sampling factors\n");
 #ifdef C_MULTISCAN_FILES_SUPPORTED
-  fprintf(stderr, "  -scans FILE    Create multi-scan JPEG per script FILE\n");
+  fprintf(stderr, "  -scans file    Create multi-scan JPEG per script file\n");
 #endif
   exit(EXIT_FAILURE);
 }
@@ -769,7 +766,7 @@ main (int argc, char **argv)
   jpeg_start_compress(&cinfo, TRUE);
 
   /* Copy metadata */
-  if (copy_markers) {
+  if (is_jpeg) {
     jpeg_saved_marker_ptr marker;
     
     /* In the current implementation, we don't actually need to examine the

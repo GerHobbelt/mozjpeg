@@ -2,11 +2,11 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.56])
-AC_INIT([mozjpeg], [3.3.1])
+AC_INIT([mozjpeg], [3.2])
 BUILD=`date +%Y%m%d`
 
 AM_INIT_AUTOMAKE([-Wall foreign dist-bzip2])
-AC_PREFIX_DEFAULT(/opt/mozjpeg)
+AC_PREFIX_DEFAULT(/usr)
 
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
@@ -36,6 +36,7 @@ old_prefix=${prefix}
 if test "x$prefix" = "xNONE" -a "x$ac_default_prefix" != "x"; then
   prefix=$ac_default_prefix
 fi
+includedir='${prefix}/include/mozjpeg'
 DATADIR=`eval echo ${datadir}`
 DATADIR=`eval echo $DATADIR`
 if test "$DATADIR" = "/opt/libjpeg-turbo/share"; then
@@ -233,9 +234,9 @@ AC_SUBST(MEM_SRCDST_FUNCTIONS)
 AC_DEFINE_UNQUOTED(MOZJPEG_VERSION, [$VERSION], [mozjpeg version])
 
 m4_define(version_triplet,m4_split(AC_PACKAGE_VERSION,[[.]]))
-m4_define(version_major,m4_car(m4_shiftn(1,[],version_triplet)))
-m4_define(version_minor,m4_car(m4_shiftn(2,[],version_triplet)))
-m4_define(version_revision,m4_car(m4_shiftn(3,[],version_triplet)))
+m4_define(version_major,m4_argn(1,version_triplet))
+m4_define(version_minor,m4_argn(2,version_triplet))
+m4_define(version_revision,m4_argn(3,version_triplet))
 VERSION_MAJOR=version_major
 VERSION_MINOR=version_minor
 VERSION_REVISION=version_revision
@@ -603,8 +604,8 @@ AC_CONFIG_FILES([pkgscripts/makecygwinpkg.tmpl:release/makecygwinpkg.in])
 AC_CONFIG_FILES([pkgscripts/makedpkg.tmpl:release/makedpkg.in])
 AC_CONFIG_FILES([pkgscripts/makemacpkg.tmpl:release/makemacpkg.in])
 AC_CONFIG_FILES([pkgscripts/uninstall.tmpl:release/uninstall.in])
-AC_CONFIG_FILES([pkgscripts/libjpeg.pc:release/libjpeg.pc.in])
-AC_CONFIG_FILES([pkgscripts/libturbojpeg.pc:release/libturbojpeg.pc.in])
+AC_CONFIG_FILES([pkgscripts/libmozjpeg.pc:release/libmozjpeg.pc.in])
+AC_CONFIG_FILES([pkgscripts/libmozturbojpeg.pc:release/libmozturbojpeg.pc.in])
 if test "x$with_turbojpeg" != "xno"; then
   AC_CONFIG_FILES([tjbenchtest])
 fi
