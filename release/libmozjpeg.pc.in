@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: libmozjpeg
+Description: A SIMD-accelerated JPEG codec that provides the libjpeg API
+Version: @PACKAGE_VERSION@
+Libs: -L${libdir} -lmozjpeg
+Cflags: -I${includedir}

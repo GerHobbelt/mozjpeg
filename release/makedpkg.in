@@ -32,7 +32,7 @@ makedeb()
 	fi
 
 	umask 022
-	rm -f $PACKAGE_NAME\_$VERSION\_$DEBARCH.deb
+	rm -f $PACKAGE_NAME\_$VERSION-$BUILD\_$DEBARCH.deb
 	TMPDIR=`mktemp -d /tmp/$PACKAGE_NAME-build.XXXXXX`
 	mkdir $TMPDIR/DEBIAN
 
@@ -42,11 +42,11 @@ makedeb()
 		rm -f $TMPDIR$LIBDIR/*.la
 		rm -rf $TMPDIR/dummy
 	else
-		make install DESTDIR=$TMPDIR docdir=/usr/share/doc/$DIRNAME-$VERSION \
-			exampledir=/usr/share/doc/$DIRNAME-$VERSION
+		make install DESTDIR=$TMPDIR docdir=/usr/share/doc/$DIRNAME \
+			exampledir=/usr/share/doc/$DIRNAME
 		rm -f $TMPDIR$LIBDIR/*.la
 		if [ "$PREFIX" = "/opt/mozjpeg" -a "$DOCDIR" = "/opt/mozjpeg/doc" ]; then
-			ln -fs /usr/share/doc/$DIRNAME-$VERSION $TMPDIR$DOCDIR
+			ln -fs /usr/share/doc/$DIRNAME $TMPDIR$DOCDIR
 		fi
 	fi
 
@@ -60,7 +60,7 @@ makedeb()
 	/sbin/ldconfig -n $TMPDIR$LIBDIR
 
 	$SUDO chown -Rh root:root $TMPDIR/*
-	dpkg -b $TMPDIR $PACKAGE_NAME\_$VERSION\_$DEBARCH.deb
+	dpkg -b $TMPDIR $PACKAGE_NAME\_$VERSION-$BUILD\_$DEBARCH.deb
 }
 
 PACKAGE_NAME=@PKGNAME@
