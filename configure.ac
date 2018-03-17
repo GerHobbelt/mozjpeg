@@ -2,11 +2,11 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.56])
-AC_INIT([mozjpeg], [3.3.2])
+AC_INIT([mozjpeg], [3.3.1])
 BUILD=`date +%Y%m%d`
 
 AM_INIT_AUTOMAKE([-Wall foreign dist-bzip2])
-AC_PREFIX_DEFAULT(/opt/mozjpeg)
+AC_PREFIX_DEFAULT(/usr/local)
 
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
@@ -369,7 +369,6 @@ if test "x$JAVAC" = "x"; then
 fi
 AC_SUBST(JAVAC)
 AC_ARG_VAR(JAVACFLAGS, [Java compiler flags])
-JAVACFLAGS="$JAVACFLAGS -J-Dfile.encoding=UTF8"
 AC_SUBST(JAVACFLAGS)
 AC_ARG_VAR(JAR, [Java archive command (default: jar)])
 if test "x$JAR" = "x"; then
@@ -526,13 +525,17 @@ if test "x${with_simd}" != "xno"; then
       fi
       ;;
     powerpc*)
-      AC_CHECK_ALTIVEC(
-        [AC_MSG_RESULT([yes (powerpc)])
-         simd_arch=powerpc],
-        [AC_NO_SIMD(PowerPC SPE)])
+      AC_MSG_RESULT([yes (powerpc)])
+      simd_arch=powerpc
       ;;
     *)
-      AC_NO_SIMD($host_cpu)
+      AC_MSG_RESULT([no ("$host_cpu")])
+      with_simd=no;
+      if test "x${require_simd}" = "xyes"; then
+        AC_MSG_ERROR([SIMD support not available for this CPU.])
+      else
+        AC_MSG_WARN([SIMD support not available for this CPU.  Performance will suffer.])
+      fi
       ;;
   esac
 
@@ -570,14 +573,6 @@ case "$host_cpu" in
     RPMARCH=i386
     DEBARCH=i386
     ;;
-  powerpc64le)
-    RPMARCH=`uname -m`
-    DEBARCH=ppc64el
-    ;;
-  powerpc)
-    RPMARCH=ppc
-    DEBARCH=ppc
-    ;;
   *)
     RPMARCH=`uname -m`
     DEBARCH=$RPMARCH
@@ -608,8 +603,8 @@ AC_CONFIG_FILES([pkgscripts/makecygwinpkg.tmpl:release/makecygwinpkg.in])
 AC_CONFIG_FILES([pkgscripts/makedpkg.tmpl:release/makedpkg.in])
 AC_CONFIG_FILES([pkgscripts/makemacpkg.tmpl:release/makemacpkg.in])
 AC_CONFIG_FILES([pkgscripts/uninstall.tmpl:release/uninstall.in])
-AC_CONFIG_FILES([pkgscripts/libjpeg.pc:release/libjpeg.pc.in])
-AC_CONFIG_FILES([pkgscripts/libturbojpeg.pc:release/libturbojpeg.pc.in])
+AC_CONFIG_FILES([pkgscripts/libmozjpeg.pc:release/libjpeg.pc.in])
+AC_CONFIG_FILES([pkgscripts/libmozturbojpeg.pc:release/libturbojpeg.pc.in])
 if test "x$with_turbojpeg" != "xno"; then
   AC_CONFIG_FILES([tjbenchtest])
 fi

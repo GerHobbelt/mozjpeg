@@ -1,26 +1,26 @@
-lib_LTLIBRARIES = libjpeg.la
-libjpeg_la_LDFLAGS = -version-info ${LIBTOOL_CURRENT}:${SO_MINOR_VERSION}:${SO_AGE} -no-undefined
+lib_LTLIBRARIES = libmozjpeg.la
+libmozjpeg_la_LDFLAGS = -version-info ${LIBTOOL_CURRENT}:${SO_MINOR_VERSION}:${SO_AGE} -no-undefined
 include_HEADERS = jerror.h jmorecfg.h jpeglib.h
 
 if WITH_TURBOJPEG
-lib_LTLIBRARIES += libturbojpeg.la
-libturbojpeg_la_LDFLAGS = -version-info 1:0:1 -no-undefined
+lib_LTLIBRARIES += libmozturbojpeg.la
+libmozturbojpeg_la_LDFLAGS = -version-info 1:0:1 -no-undefined
 include_HEADERS += turbojpeg.h
 endif
 
 nodist_include_HEADERS = jconfig.h
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = pkgscripts/libjpeg.pc
+pkgconfig_DATA = pkgscripts/libmozjpeg.pc
 if WITH_TURBOJPEG
-pkgconfig_DATA += pkgscripts/libturbojpeg.pc
+pkgconfig_DATA += pkgscripts/libmozturbojpeg.pc
 endif
 
 HDRS = jchuff.h jcmaster.h jdct.h jdhuff.h jerror.h jinclude.h jmemsys.h \
 	jmorecfg.h jpegint.h jpeglib.h jversion.h jsimd.h jsimddct.h jpegcomp.h \
 	jpeg_nbits_table.h
 
-libjpeg_la_SOURCES = $(HDRS) jcapimin.c jcapistd.c jccoefct.c jccolor.c \
+libmozjpeg_la_SOURCES = $(HDRS) jcapimin.c jcapistd.c jccoefct.c jccolor.c \
 	jcdctmgr.c jcext.c jchuff.c jcinit.c jcmainct.c jcmarker.c \
 	jcmaster.c jcomapi.c jcparam.c jcphuff.c jcprepct.c jcsample.c \
 	jctrans.c jdapimin.c jdapistd.c jdatadst.c jdatasrc.c jdcoefct.c \
@@ -30,15 +30,15 @@ libjpeg_la_SOURCES = $(HDRS) jcapimin.c jcapistd.c jccoefct.c jccolor.c \
 	jidctint.c jidctred.c jquant1.c jquant2.c jutils.c jmemmgr.c jmemnobs.c
 
 if WITH_ARITH
-libjpeg_la_SOURCES += jaricom.c
+libmozjpeg_la_SOURCES += jaricom.c
 endif
 
 if WITH_ARITH_ENC
-libjpeg_la_SOURCES += jcarith.c
+libmozjpeg_la_SOURCES += jcarith.c
 endif
 
 if WITH_ARITH_DEC
-libjpeg_la_SOURCES += jdarith.c
+libmozjpeg_la_SOURCES += jdarith.c
 endif
 
 
@@ -47,13 +47,13 @@ SUBDIRS = java
 
 if WITH_TURBOJPEG
 
-libturbojpeg_la_SOURCES = $(libjpeg_la_SOURCES) turbojpeg.c turbojpeg.h \
+libmozturbojpeg_la_SOURCES = $(libmozjpeg_la_SOURCES) turbojpeg.c turbojpeg.h \
 	transupp.c transupp.h jdatadst-tj.c jdatasrc-tj.c
 
 if WITH_JAVA
 
-libturbojpeg_la_SOURCES += turbojpeg-jni.c
-libturbojpeg_la_CFLAGS = ${JNI_CFLAGS}
+libmozturbojpeg_la_SOURCES += turbojpeg-jni.c
+libmozturbojpeg_la_CFLAGS = ${JNI_CFLAGS}
 TJMAPFILE = turbojpeg-mapfile.jni
 
 else
@@ -62,115 +62,115 @@ TJMAPFILE = turbojpeg-mapfile
 
 endif
 
-libturbojpeg_la_SOURCES += $(TJMAPFILE)
+libmozturbojpeg_la_SOURCES += $(TJMAPFILE)
 
 if VERSION_SCRIPT
-libturbojpeg_la_LDFLAGS += $(VERSION_SCRIPT_FLAG)$(srcdir)/$(TJMAPFILE)
+libmozturbojpeg_la_LDFLAGS += $(VERSION_SCRIPT_FLAG)$(srcdir)/$(TJMAPFILE)
 endif
 
 endif
 
 
 if VERSION_SCRIPT
-libjpeg_la_LDFLAGS += $(VERSION_SCRIPT_FLAG)libjpeg.map
+libmozjpeg_la_LDFLAGS += $(VERSION_SCRIPT_FLAG)libjpeg.map
 endif
 
 
 if WITH_SIMD
 
 SUBDIRS += simd
-libjpeg_la_LIBADD = simd/libsimd.la
-libturbojpeg_la_LIBADD = simd/libsimd.la
+libmozjpeg_la_LIBADD = simd/libsimd.la
+libmozturbojpeg_la_LIBADD = simd/libsimd.la
 
 else
 
-libjpeg_la_SOURCES += jsimd_none.c
+libmozjpeg_la_SOURCES += jsimd_none.c
 
 endif
 
 
-bin_PROGRAMS = cjpeg djpeg jpegtran rdjpgcom wrjpgcom
-noinst_PROGRAMS = jcstest jpegyuv yuvjpeg
+bin_PROGRAMS = mozcjpeg mozdjpeg mozjpegtran mozrdjpgcom mozwrjpgcom
+noinst_PROGRAMS = mozjcstest mozjpegyuv mozyuvjpeg
 
 
 if WITH_TURBOJPEG
 
-bin_PROGRAMS += tjbench
+bin_PROGRAMS += moztjbench
 
-noinst_PROGRAMS += tjunittest
+noinst_PROGRAMS += moztjunittest
 
-tjbench_SOURCES = tjbench.c bmp.h bmp.c tjutil.h tjutil.c rdbmp.c rdppm.c \
+moztjbench_SOURCES = tjbench.c bmp.h bmp.c tjutil.h tjutil.c rdbmp.c rdppm.c \
 	wrbmp.c wrppm.c
 
-tjbench_LDADD = libturbojpeg.la libjpeg.la -lm
+moztjbench_LDADD = libmozturbojpeg.la libmozjpeg.la -lm
 
-tjbench_CFLAGS = -DBMP_SUPPORTED -DPPM_SUPPORTED
+moztjbench_CFLAGS = -DBMP_SUPPORTED -DPPM_SUPPORTED
 
-tjunittest_SOURCES = tjunittest.c tjutil.h tjutil.c
+moztjunittest_SOURCES = tjunittest.c tjutil.h tjutil.c
 
-tjunittest_LDADD = libturbojpeg.la
+moztjunittest_LDADD = libmozturbojpeg.la
 
 endif
 
 
-cjpeg_SOURCES = cdjpeg.h cderror.h cdjpeg.c cjpeg.c rdgif.c rdppm.c rdswitch.c rdjpeg.c
+mozcjpeg_SOURCES = cdjpeg.h cderror.h cdjpeg.c cjpeg.c rdgif.c rdppm.c rdswitch.c rdjpeg.c
 if WITH_12BIT
 else
-cjpeg_SOURCES += rdbmp.c rdtarga.c
+mozcjpeg_SOURCES += rdbmp.c rdtarga.c
 endif
 
-cjpeg_LDADD = libjpeg.la
+mozcjpeg_LDADD = libmozjpeg.la
 
-cjpeg_CFLAGS = -DGIF_SUPPORTED -DPPM_SUPPORTED
+mozcjpeg_CFLAGS = -DGIF_SUPPORTED -DPPM_SUPPORTED
 if WITH_12BIT
 else
-cjpeg_CFLAGS += -DBMP_SUPPORTED -DTARGA_SUPPORTED
+mozcjpeg_CFLAGS += -DBMP_SUPPORTED -DTARGA_SUPPORTED
 endif
 
 if HAVE_LIBPNG
-cjpeg_CFLAGS += -DPNG_SUPPORTED $(libpng_CFLAGS)
-cjpeg_LDADD += $(libpng_LIBS)
-cjpeg_SOURCES += rdpng.c
+mozcjpeg_CFLAGS += -DPNG_SUPPORTED $(libpng_CFLAGS)
+mozcjpeg_LDADD += $(libpng_LIBS)
+mozcjpeg_SOURCES += rdpng.c
 endif
 
-djpeg_SOURCES = cdjpeg.h cderror.h cdjpeg.c djpeg.c rdcolmap.c rdswitch.c \
+mozdjpeg_SOURCES = cdjpeg.h cderror.h cdjpeg.c djpeg.c rdcolmap.c rdswitch.c \
 	wrgif.c wrppm.c
 if WITH_12BIT
 else
-djpeg_SOURCES += wrbmp.c wrtarga.c
+mozdjpeg_SOURCES += wrbmp.c wrtarga.c
 endif
 
-djpeg_LDADD = libjpeg.la
+mozdjpeg_LDADD = libmozjpeg.la
 
-djpeg_CFLAGS = -DGIF_SUPPORTED -DPPM_SUPPORTED
+mozdjpeg_CFLAGS = -DGIF_SUPPORTED -DPPM_SUPPORTED
 if WITH_12BIT
 else
-djpeg_CFLAGS += -DBMP_SUPPORTED -DTARGA_SUPPORTED
+mozdjpeg_CFLAGS += -DBMP_SUPPORTED -DTARGA_SUPPORTED
 endif
 
-jpegtran_SOURCES = jpegtran.c rdswitch.c cdjpeg.c transupp.c transupp.h
+mozjpegtran_SOURCES = jpegtran.c rdswitch.c cdjpeg.c transupp.c transupp.h
 
-jpegtran_LDADD = libjpeg.la
+mozjpegtran_LDADD = libmozjpeg.la
 
-rdjpgcom_SOURCES = rdjpgcom.c
+mozrdjpgcom_SOURCES = rdjpgcom.c
 
-rdjpgcom_LDADD = libjpeg.la
+mozrdjpgcom_LDADD = libmozjpeg.la
 
-wrjpgcom_SOURCES = wrjpgcom.c
+mozwrjpgcom_SOURCES = wrjpgcom.c
 
-wrjpgcom_LDADD = libjpeg.la
+mozwrjpgcom_LDADD = libmozjpeg.la
 
-jcstest_SOURCES = jcstest.c
+mozjcstest_SOURCES = jcstest.c
 
-jcstest_LDADD = libjpeg.la
+mozjcstest_LDADD = libmozjpeg.la
 
-jpegyuv_SOURCES = jpegyuv.c
+mozjpegyuv_SOURCES = jpegyuv.c
 
-jpegyuv_LDADD = libjpeg.la
+mozjpegyuv_LDADD = libmozjpeg.la
 
-yuvjpeg_SOURCES = yuvjpeg.c
+mozyuvjpeg_SOURCES = yuvjpeg.c
 
-yuvjpeg_LDADD = libjpeg.la
+mozyuvjpeg_LDADD = libmozjpeg.la
 
 dist_man1_MANS = cjpeg.1 djpeg.1 jpegtran.1 rdjpgcom.1 wrjpgcom.1
 
@@ -187,7 +187,7 @@ dist_example_DATA = example.c
 EXTRA_DIST = win release $(DOCS) testimages CMakeLists.txt \
 	sharedlib/CMakeLists.txt cmakescripts libjpeg.map.in doc doxygen.config \
 	doxygen-extra.css jccolext.c jdcolext.c jdcol565.c jdmrgext.c jdmrg565.c \
-	jstdhuff.c jdcoefct.h jdmainct.h jdmaster.h jdsample.h \
+	jstdhuff.c jdcoefct.h jdmainct.h jdmaster.h jdsample.h wrppm.h \
 	md5/CMakeLists.txt
 
 dist-hook:
@@ -711,8 +711,6 @@ testclean:
 	rm -f *_411_*.ppm
 	rm -f *_411_*.jpg
 	rm -f *_411.yuv
-	rm -f tjbenchtest*.log
-	rm -f tjexampletest*.log
 
 
 tjtest:
