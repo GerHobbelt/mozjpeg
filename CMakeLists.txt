@@ -82,7 +82,7 @@ if(WIN32)
     set(CMAKE_INSTALL_DEFAULT_PREFIX "${CMAKE_INSTALL_DEFAULT_PREFIX}64")
   endif()
 else()
-  set(CMAKE_INSTALL_DEFAULT_PREFIX /opt/${CMAKE_PROJECT_NAME})
+  set(CMAKE_INSTALL_DEFAULT_PREFIX /usr)
 endif()
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_DEFAULT_PREFIX}" CACHE PATH
@@ -95,7 +95,7 @@ message(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
 # build is being created, and thus we install things into specific locations.
 
 if(CMAKE_INSTALL_PREFIX STREQUAL "${CMAKE_INSTALL_DEFAULT_PREFIX}")
-  set(CMAKE_INSTALL_DEFAULT_DATAROOTDIR "")
+  set(CMAKE_INSTALL_DEFAULT_DATAROOTDIR "share")
   set(CMAKE_INSTALL_DEFAULT_DOCDIR "<CMAKE_INSTALL_DATAROOTDIR>/doc")
   set(CMAKE_INSTALL_DEFAULT_JAVADIR "<CMAKE_INSTALL_DATAROOTDIR>/classes")
   if(UNIX AND NOT APPLE)
@@ -550,10 +550,10 @@ if(ENABLE_SHARED)
 endif()
 
 if(ENABLE_STATIC)
-  add_library(jpeg-static STATIC ${JPEG_SOURCES} $<TARGET_OBJECTS:simd>
+  add_library(mozjpeg-static STATIC ${JPEG_SOURCES} $<TARGET_OBJECTS:simd>
     ${SIMD_OBJS})
   if(NOT MSVC)
-    set_target_properties(jpeg-static PROPERTIES OUTPUT_NAME jpeg)
+    set_target_properties(mozjpeg-static PROPERTIES OUTPUT_NAME jpeg)
   endif()
 endif()
 
@@ -568,69 +568,69 @@ if(WITH_TURBOJPEG)
     include_directories(${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
       set(TJMAPFILE ${CMAKE_CURRENT_SOURCE_DIR}/turbojpeg-mapfile.jni)
   endif()
-    add_library(turbojpeg SHARED ${TURBOJPEG_SOURCES})
-    set_property(TARGET turbojpeg PROPERTY COMPILE_FLAGS
+    add_library(mozturbojpeg SHARED ${TURBOJPEG_SOURCES})
+    set_property(TARGET mozturbojpeg PROPERTY COMPILE_FLAGS
       "-DBMP_SUPPORTED -DPPM_SUPPORTED")
     if(WIN32)
-    set_target_properties(turbojpeg PROPERTIES DEFINE_SYMBOL DLLDEFINE)
+    set_target_properties(mozturbojpeg PROPERTIES DEFINE_SYMBOL DLLDEFINE)
     endif()
     if(MINGW)
-      set_target_properties(turbojpeg PROPERTIES LINK_FLAGS -Wl,--kill-at)
+      set_target_properties(mozturbojpeg PROPERTIES LINK_FLAGS -Wl,--kill-at)
     endif()
     if(APPLE AND (NOT CMAKE_OSX_DEPLOYMENT_TARGET OR
                   CMAKE_OSX_DEPLOYMENT_TARGET VERSION_GREATER 10.4))
       if(NOT CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG)
         set(CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG "-Wl,-rpath,")
       endif()
-      set_target_properties(turbojpeg PROPERTIES MACOSX_RPATH 1)
+      set_target_properties(mozturbojpeg PROPERTIES MACOSX_RPATH 1)
     endif()
-    set_target_properties(turbojpeg PROPERTIES
+    set_target_properties(mozturbojpeg PROPERTIES
       SOVERSION ${TURBOJPEG_SO_MAJOR_VERSION} VERSION ${TURBOJPEG_SO_VERSION})
     if(TJMAPFLAG)
-      set_target_properties(turbojpeg PROPERTIES
+      set_target_properties(mozturbojpeg PROPERTIES
         LINK_FLAGS "${TJMAPFLAG}${TJMAPFILE}")
     endif()
 
-    add_executable(tjunittest tjunittest.c tjutil.c md5/md5.c md5/md5hl.c)
-    target_link_libraries(tjunittest turbojpeg)
+    add_executable(moztjunittest tjunittest.c tjutil.c md5/md5.c md5/md5hl.c)
+    target_link_libraries(moztjunittest mozturbojpeg)
     if(UNIX)
-      target_link_libraries(tjunittest m)
+      target_link_libraries(moztjunittest m)
     endif()
 
-    add_executable(tjbench tjbench.c tjutil.c)
-    target_link_libraries(tjbench turbojpeg)
+    add_executable(moztjbench tjbench.c tjutil.c)
+    target_link_libraries(moztjbench mozturbojpeg)
     if(UNIX)
-      target_link_libraries(tjbench m)
+      target_link_libraries(moztjbench m)
     endif()
 
-    add_executable(tjexample tjexample.c)
-    target_link_libraries(tjexample turbojpeg)
+    add_executable(moztjexample tjexample.c)
+    target_link_libraries(moztjexample mozturbojpeg)
     if(UNIX)
-      target_link_libraries(tjexample m)
+      target_link_libraries(moztjexample m)
     endif()
   endif()
 
   if(ENABLE_STATIC)
-    add_library(turbojpeg-static STATIC ${JPEG_SOURCES} $<TARGET_OBJECTS:simd>
+    add_library(mozturbojpeg-static STATIC ${JPEG_SOURCES} $<TARGET_OBJECTS:simd>
       ${SIMD_OBJS} turbojpeg.c transupp.c jdatadst-tj.c jdatasrc-tj.c rdbmp.c
       rdppm.c wrbmp.c wrppm.c)
-    set_property(TARGET turbojpeg-static PROPERTY COMPILE_FLAGS
+    set_property(TARGET mozturbojpeg-static PROPERTY COMPILE_FLAGS
       "-DBMP_SUPPORTED -DPPM_SUPPORTED")
     if(NOT MSVC)
-      set_target_properties(turbojpeg-static PROPERTIES OUTPUT_NAME turbojpeg)
+      set_target_properties(mozturbojpeg-static PROPERTIES OUTPUT_NAME turbojpeg)
     endif()
 
-    add_executable(tjunittest-static tjunittest.c tjutil.c md5/md5.c
+    add_executable(moztjunittest-static tjunittest.c tjutil.c md5/md5.c
       md5/md5hl.c)
-    target_link_libraries(tjunittest-static turbojpeg-static)
+    target_link_libraries(moztjunittest-static mozturbojpeg-static)
     if(UNIX)
-      target_link_libraries(tjunittest-static m)
+      target_link_libraries(moztjunittest-static m)
     endif()
 
-    add_executable(tjbench-static tjbench.c tjutil.c)
-    target_link_libraries(tjbench-static turbojpeg-static)
+    add_executable(moztjbench-static tjbench.c tjutil.c)
+    target_link_libraries(moztjbench-static mozturbojpeg-static)
     if(UNIX)
-      target_link_libraries(tjbench-static m)
+      target_link_libraries(moztjbench-static m)
     endif()
   endif()
 endif()
@@ -652,42 +652,42 @@ else()
 endif()
 
 if(ENABLE_STATIC)
-  add_executable(cjpeg-static cjpeg.c cdjpeg.c rdgif.c rdppm.c rdjpeg.c rdswitch.c
+  add_executable(mozcjpeg-static cjpeg.c cdjpeg.c rdgif.c rdppm.c rdjpeg.c rdswitch.c
     ${CJPEG_BMP_SOURCES})
-  set_property(TARGET cjpeg-static PROPERTY COMPILE_FLAGS ${COMPILE_FLAGS})
-  target_link_libraries(cjpeg-static jpeg-static)
+  set_property(TARGET mozcjpeg-static PROPERTY COMPILE_FLAGS ${COMPILE_FLAGS})
+  target_link_libraries(mozcjpeg-static mozjpeg-static)
   if(UNIX)
-    target_link_libraries(cjpeg-static m)
+    target_link_libraries(mozcjpeg-static m)
   endif()
 
   if(PNG_SUPPORTED)
     set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_STATIC_LIBRARY_SUFFIX})
     find_package(PNG 1.6 REQUIRED)
     find_package(ZLIB REQUIRED)
-    target_include_directories(cjpeg-static PUBLIC ${PNG_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
-    target_link_libraries(cjpeg-static ${PNG_LIBRARY} ${ZLIB_LIBRARY})
+    target_include_directories(mozcjpeg-static PUBLIC ${PNG_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
+    target_link_libraries(mozcjpeg-static ${PNG_LIBRARY} ${ZLIB_LIBRARY})
   endif()
 
-  add_executable(djpeg-static djpeg.c cdjpeg.c rdcolmap.c rdswitch.c wrgif.c
+  add_executable(mozdjpeg-static djpeg.c cdjpeg.c rdcolmap.c rdswitch.c wrgif.c
     wrppm.c ${DJPEG_BMP_SOURCES})
-  set_property(TARGET djpeg-static PROPERTY COMPILE_FLAGS ${COMPILE_FLAGS})
-  target_link_libraries(djpeg-static jpeg-static)
+  set_property(TARGET mozdjpeg-static PROPERTY COMPILE_FLAGS ${COMPILE_FLAGS})
+  target_link_libraries(mozdjpeg-static mozjpeg-static)
   if(UNIX)
-    target_link_libraries(djpeg-static m)
+    target_link_libraries(mozdjpeg-static m)
   endif()
 
-  add_executable(jpegtran-static jpegtran.c cdjpeg.c rdswitch.c transupp.c)
-  target_link_libraries(jpegtran-static jpeg-static)
+  add_executable(mozjpegtran-static jpegtran.c cdjpeg.c rdswitch.c transupp.c)
+  target_link_libraries(mozjpegtran-static mozjpeg-static)
   if(UNIX)
-    target_link_libraries(jpegtran-static m)
+    target_link_libraries(mozjpegtran-static m)
   endif()
 
-  set_property(TARGET jpegtran-static PROPERTY COMPILE_FLAGS "${USE_SETMODE}")
+  set_property(TARGET mozjpegtran-static PROPERTY COMPILE_FLAGS "${USE_SETMODE}")
 endif()
 
-add_executable(rdjpgcom rdjpgcom.c)
+add_executable(mozrdjpgcom rdjpgcom.c)
 
-add_executable(wrjpgcom wrjpgcom.c)
+add_executable(mozwrjpgcom wrjpgcom.c)
 
 
 ###############################################################################
@@ -1356,13 +1356,13 @@ set(EXE ${CMAKE_EXECUTABLE_SUFFIX})
 
 if(WITH_TURBOJPEG)
   if(ENABLE_SHARED)
-    install(TARGETS turbojpeg tjbench
+    install(TARGETS mozturbojpeg moztjbench
       ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
       LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
       RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
   endif()
   if(ENABLE_STATIC)
-    install(TARGETS turbojpeg-static ARCHIVE
+    install(TARGETS mozturbojpeg-static ARCHIVE
       DESTINATION ${CMAKE_INSTALL_LIBDIR})
     if(NOT ENABLE_SHARED)
       install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/tjbench-static${EXE}
@@ -1374,7 +1374,7 @@ if(WITH_TURBOJPEG)
 endif()
 
 if(ENABLE_STATIC)
-  install(TARGETS jpeg-static ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+  install(TARGETS mozjpeg-static ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
   if(NOT ENABLE_SHARED)
     install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/cjpeg-static${EXE}
       DESTINATION ${CMAKE_INSTALL_BINDIR} RENAME cjpeg${EXE})
@@ -1385,7 +1385,7 @@ if(ENABLE_STATIC)
   endif()
 endif()
 
-install(TARGETS rdjpgcom wrjpgcom RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS mozrdjpgcom mozwrjpgcom RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.ijg
   ${CMAKE_CURRENT_SOURCE_DIR}/README.md ${CMAKE_CURRENT_SOURCE_DIR}/example.txt

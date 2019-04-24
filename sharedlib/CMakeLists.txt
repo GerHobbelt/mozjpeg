@@ -35,31 +35,31 @@ else()
     set(DEFFILE ../win/jpeg${SO_MAJOR_VERSION}.def)
   endif()
 endif()
-add_library(jpeg SHARED ${JPEG_SRCS} ${DEFFILE} $<TARGET_OBJECTS:simd>
+add_library(mozjpeg SHARED ${JPEG_SRCS} ${DEFFILE} $<TARGET_OBJECTS:simd>
   ${SIMD_OBJS})
 if(UNIX)
-  target_link_libraries(jpeg m)
+  target_link_libraries(mozjpeg m)
 endif()
 
-set_target_properties(jpeg PROPERTIES SOVERSION ${SO_MAJOR_VERSION}
+set_target_properties(mozjpeg PROPERTIES SOVERSION ${SO_MAJOR_VERSION}
   VERSION ${SO_MAJOR_VERSION}.${SO_AGE}.${SO_MINOR_VERSION})
 if(APPLE AND (NOT CMAKE_OSX_DEPLOYMENT_TARGET OR
               CMAKE_OSX_DEPLOYMENT_TARGET VERSION_GREATER 10.4))
   if(NOT CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG)
     set(CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG "-Wl,-rpath,")
   endif()
-  set_target_properties(jpeg PROPERTIES MACOSX_RPATH 1)
+  set_target_properties(mozjpeg PROPERTIES MACOSX_RPATH 1)
 endif()
 if(MAPFLAG)
-  set_target_properties(jpeg PROPERTIES
+  set_target_properties(mozjpeg PROPERTIES
     LINK_FLAGS "${MAPFLAG}${CMAKE_CURRENT_BINARY_DIR}/../libjpeg.map")
 endif()
 if(MSVC)
-  set_target_properties(jpeg PROPERTIES SUFFIX ${SO_MAJOR_VERSION}.dll)
+  set_target_properties(mozjpeg PROPERTIES SUFFIX ${SO_MAJOR_VERSION}.dll)
   # The jsimd_*.c file is built using /MT, so this prevents a linker warning.
-  set_target_properties(jpeg PROPERTIES LINK_FLAGS "/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCMTD")
+  set_target_properties(mozjpeg PROPERTIES LINK_FLAGS "/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCMTD")
 elseif(MINGW)
-  set_target_properties(jpeg PROPERTIES SUFFIX -${SO_MAJOR_VERSION}.dll)
+  set_target_properties(mozjpeg PROPERTIES SUFFIX -${SO_MAJOR_VERSION}.dll)
 endif()
 
 if(WIN32)
@@ -73,24 +73,24 @@ else()
 	set(DJPEG_BMP_SOURCES ../wrbmp.c ../wrtarga.c)
 endif()
 
-add_executable(cjpeg ../cjpeg.c ../cdjpeg.c ../rdgif.c ../rdppm.c ../rdjpeg.c
+add_executable(mozcjpeg ../cjpeg.c ../cdjpeg.c ../rdgif.c ../rdppm.c ../rdjpeg.c
   ../rdswitch.c ${CJPEG_BMP_SOURCES})
-set_property(TARGET cjpeg PROPERTY COMPILE_FLAGS ${COMPILE_FLAGS})
-target_link_libraries(cjpeg jpeg)
+set_property(TARGET mozcjpeg PROPERTY COMPILE_FLAGS ${COMPILE_FLAGS})
+target_link_libraries(mozcjpeg mozjpeg)
 
-add_executable(djpeg ../djpeg.c ../cdjpeg.c ../rdcolmap.c ../rdswitch.c
+add_executable(mozdjpeg ../djpeg.c ../cdjpeg.c ../rdcolmap.c ../rdswitch.c
   ../wrgif.c ../wrppm.c ${DJPEG_BMP_SOURCES})
-set_property(TARGET djpeg PROPERTY COMPILE_FLAGS ${COMPILE_FLAGS})
-target_link_libraries(djpeg jpeg)
+set_property(TARGET mozdjpeg PROPERTY COMPILE_FLAGS ${COMPILE_FLAGS})
+target_link_libraries(mozdjpeg mozjpeg)
 
-add_executable(jpegtran ../jpegtran.c ../cdjpeg.c ../rdswitch.c ../transupp.c)
-target_link_libraries(jpegtran jpeg)
-set_property(TARGET jpegtran PROPERTY COMPILE_FLAGS "${USE_SETMODE}")
+add_executable(mozjpegtran ../jpegtran.c ../cdjpeg.c ../rdswitch.c ../transupp.c)
+target_link_libraries(mozjpegtran mozjpeg)
+set_property(TARGET mozjpegtran PROPERTY COMPILE_FLAGS "${USE_SETMODE}")
 
-add_executable(jcstest ../jcstest.c)
-target_link_libraries(jcstest jpeg)
+add_executable(mozjcstest ../jcstest.c)
+target_link_libraries(mozjcstest mozjpeg)
 
-install(TARGETS jpeg cjpeg djpeg jpegtran
+install(TARGETS mozjpeg mozcjpeg mozdjpeg mozjpegtran
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
