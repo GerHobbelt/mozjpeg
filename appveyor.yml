@@ -58,6 +58,5 @@ deploy:
   auth_token:
     secure: qPyuZeDQwcT/xU8oY27od3fflTqWxOcVjMHzw6/rOsb31ahFW7T3pKczRPBsQDW0
   artifact: /.*\.zip/
-  force_update: true
   on:
     APPVEYOR_REPO_TAG: true        # deploy on tag push only
