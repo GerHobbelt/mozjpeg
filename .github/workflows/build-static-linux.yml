@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: update
         run: sudo apt update
       - name: install deps
@@ -22,11 +23,13 @@ jobs:
           git describe --always --tags --dirty
           GIT_VERSION=$(git describe --always --tags --dirty)
       - name: Build static
-      - run: cmake -B static -DENABLE_SHARED=0 -DENABLE_STATIC=1 -DREQUIRE_SIMD=1
-      - run: cmake --build static --config Release
+        run: |
+          cmake -B static -DENABLE_SHARED=0 -DENABLE_STATIC=1 -DREQUIRE_SIMD=1
+          cmake --build static --config Release
       - name: Zip release
-      - run: mv static/*-static ./Release
-      - run: 7z a mozjpeg-$GIT_VERSION-linux-x64.zip Release
+        run: |
+          mv static/*-static ./Release
+          7z a mozjpeg-$GIT_VERSION-linux-x64.zip Release
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
