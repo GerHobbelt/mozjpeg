@@ -28,6 +28,7 @@ jobs:
           cmake --build static --config Release
       - name: Zip release
         run: |
+          mkdir Release
           mv static/*-static ./Release
           7z a mozjpeg-$GIT_VERSION-linux-x64.zip Release
       - name: Archive production artifacts
