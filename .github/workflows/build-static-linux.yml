@@ -15,9 +15,9 @@ jobs:
 
     steps:
       - name: Checkout
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
       - name: System info
-      - uses: kenchan0130/actions-system-info@master
+        uses: kenchan0130/actions-system-info@master
       - name: update
         run: sudo apt update
       - name: install deps
