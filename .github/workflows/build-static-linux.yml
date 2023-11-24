@@ -36,10 +36,10 @@ jobs:
         run: |
           mkdir Release
           mv static/*-static ./Release
-          7z a mozjpeg-$GIT_VERSION-linux-(${{ steps.system-info.outputs.release }})-x64.zip Release
+          7z a mozjpeg-$GIT_VERSION-linux-${{ steps.system-info.outputs.release }}-x64.zip Release
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: mozjpeg-$GIT_VERSION-linux-(${{ steps.system-info.outputs.release }})-x64.zip
+          name: mozjpeg-$GIT_VERSION-linux-${{ steps.system-info.outputs.release }}-x64.zip
           path: |
             Release/
